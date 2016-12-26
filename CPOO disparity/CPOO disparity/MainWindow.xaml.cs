@@ -93,8 +93,16 @@ namespace CPOO_disparity
 
         private void Save_MouseDown(object sender, MouseButtonEventArgs e)
         {
-            maxDepth = 64;
-            maskSize = 5;
+            if (bitmapRes != null)
+            {
+                SaveFileDialog saveFileDialog1 = new SaveFileDialog();
+                saveFileDialog1.Filter = "Image Files (*.png)|*.png;"; ;
+                saveFileDialog1.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyPictures);
+                if (saveFileDialog1.ShowDialog() == true)
+                {
+                    bitmapRes.Save(saveFileDialog1.FileName);
+                }
+            }
         }
 
         private async void Compute_Click(object sender, RoutedEventArgs e)
