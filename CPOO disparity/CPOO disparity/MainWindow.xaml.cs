@@ -42,9 +42,13 @@ namespace CPOO_disparity
         private Bitmap bitmapL;
         private Bitmap bitmapR;
         private Bitmap bitmapRes;
-        private bool InWork = false;
+        private bool inWork = false;
         private int maxDepth = 64;
         private int maskSize = 5;
+        private bool postprocess = true;
+        private bool pseudocolor = true;
+        private double imgEdg;
+        private double dispEdg;
 
         private void Open_MouseDown(object sender, MouseButtonEventArgs e)
         {
@@ -89,23 +93,34 @@ namespace CPOO_disparity
 
         private void Save_MouseDown(object sender, MouseButtonEventArgs e)
         {
-
+            maxDepth = 64;
+            maskSize = 5;
         }
 
         private async void Compute_Click(object sender, RoutedEventArgs e)
         {
-            if (bitmapL != null && bitmapR != null && !InWork)
+            if (bitmapL != null && bitmapR != null && !inWork)
             {
-                InWork = true;
-                //GetParametersFromUI();
+                inWork = true;
+                GetParametersFromUI();
                 IndicateStart();
 
                 await MakeCalculationsForLeft();
                 ResultImage.Source = BitmapToBitmapImageConverter.Convert(bitmapRes);
 
                 IndicateStop();
-                InWork = false;
+                inWork = false;
             }
+        }
+
+        private void GetParametersFromUI()
+        {
+            maxDepth = Int32.Parse(MaxDepth.SelectionBoxItem as String);
+            maskSize = Int32.Parse(MaskSize.SelectionBoxItem as String);
+            postprocess = (bool)Postprocess.IsChecked;
+            pseudocolor = (bool)Pseudocolor.IsChecked;
+            imgEdg = ImgSld.Value;
+            dispEdg = DispSld.Value;
         }
 
         private void IndicateStart()
