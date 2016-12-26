@@ -151,6 +151,23 @@ namespace CPOO_disparity
 
             var dsp = new DisparityLeft();
             bitmapRes = await CalculateDisparityAsync(dsp, options);
+
+            if(postprocess)
+            {
+                await Task.Run(() =>
+                {
+                    Bitmap mask = Postprocessor.ColorGradCmp(bitmapL, bitmapRes, imgEdg, dispEdg, maxDepth);
+                    bitmapRes = Postprocessor.MedianOnMask(bitmapRes, mask);
+                });
+            }
+
+            if (pseudocolor)
+            {
+                await Task.Run(() =>
+                {
+                    bitmapRes = Postprocessor.Pseudocolor(bitmapRes);
+                });
+            }
         }
 
         private DisparityCalculationOptions SetDisparityCalculationOptions()
