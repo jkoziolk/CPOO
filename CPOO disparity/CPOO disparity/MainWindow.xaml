@@ -67,8 +67,14 @@
                     <ColumnDefinition Width="15" />
                     <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
-                <CheckBox Name="Pseudocolor" IsChecked="True" VerticalAlignment="Center" />
-                <Label Foreground="White" Grid.Column="1" VerticalAlignment="Center" FontSize="14">Pseudocolor</Label>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+                <CheckBox Name="Postprocess" IsChecked="True" VerticalAlignment="Center" />
+                <Label Foreground="White" Grid.Column="1" VerticalAlignment="Center" FontSize="14">Postprocess</Label>
+                <CheckBox Name="Pseudocolor" Grid.Row="1" IsChecked="True" VerticalAlignment="Center" />
+                <Label Foreground="White" Grid.Row="1"  Grid.Column="1" VerticalAlignment="Center" FontSize="14">Pseudocolor</Label>
             </Grid>            
         </Grid>
         <Grid Name="ImagesGrid" Grid.Row="1">
