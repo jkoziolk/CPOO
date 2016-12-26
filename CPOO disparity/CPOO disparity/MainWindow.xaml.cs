@@ -24,5 +24,20 @@ namespace CPOO_disparity
         {
             InitializeComponent();
         }
+
+        private void Open_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+
+        }
+
+        private void Save_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+
+        }
+
+        private void Compute_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
     }
 }
