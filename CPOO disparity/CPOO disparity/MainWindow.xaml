@@ -102,8 +102,9 @@
                 <ColumnDefinition Width="30" />
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
-            <Image Margin="6" Name="IndicatorImg" Source="icons/tick_48.png"/>
-            <Label Grid.Column="1" Name="IndicatorTxt" Foreground="White" VerticalAlignment="Center" FontSize="14">Ready</Label>
+            <Image Margin="6" Name="IndicatorReady" Visibility="Visible" Source="icons/tick_48.png"/>
+            <Image Margin="6" Name="IndicatorProcess" Visibility="Collapsed" Source="icons/gear_32.png"/>
+            <TextBlock Grid.Column="1" Name="IndicatorText" Foreground="White" VerticalAlignment="Center" FontSize="14">Ready</TextBlock>
         </Grid>
     </Grid>
 </Window>

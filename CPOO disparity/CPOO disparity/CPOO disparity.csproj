@@ -23,6 +23,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -63,6 +64,9 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="BitmapToBitmapImageConverter.cs" />
+    <Compile Include="Disparity.cs" />
+    <Compile Include="DisparityLeft.cs" />
+    <Compile Include="DisparityOptions.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -73,7 +77,9 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="MapToBitmapConverter.cs" />
     <Compile Include="OpenDialog.xaml.cs" />
+    <Compile Include="ProcessableBitmap.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>

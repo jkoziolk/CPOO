@@ -42,6 +42,9 @@ namespace CPOO_disparity
         private Bitmap bitmapL;
         private Bitmap bitmapR;
         private Bitmap bitmapRes;
+        private bool InWork = false;
+        private int maxDepth = 64;
+        private int maskSize = 5;
 
         private void Open_MouseDown(object sender, MouseButtonEventArgs e)
         {
@@ -89,9 +92,62 @@ namespace CPOO_disparity
 
         }
 
-        private void Compute_Click(object sender, RoutedEventArgs e)
+        private async void Compute_Click(object sender, RoutedEventArgs e)
         {
+            if (bitmapL != null && bitmapR != null && !InWork)
+            {
+                InWork = true;
+                //GetParametersFromUI();
+                IndicateStart();
 
+                await MakeCalculationsForLeft();
+                ResultImage.Source = BitmapToBitmapImageConverter.Convert(bitmapRes);
+
+                IndicateStop();
+                InWork = false;
+            }
+        }
+
+        private void IndicateStart()
+        {
+            IndicatorText.Text = "Computations in progress";
+            IndicatorReady.Visibility = System.Windows.Visibility.Collapsed;
+            IndicatorProcess.Visibility = System.Windows.Visibility.Visible;
+        }
+
+        private void IndicateStop()
+        {
+            IndicatorText.Text = "Ready";
+            IndicatorReady.Visibility = System.Windows.Visibility.Visible;
+            IndicatorProcess.Visibility = System.Windows.Visibility.Collapsed;
+        }
+
+        private async Task MakeCalculationsForLeft()
+        {
+            DisparityCalculationOptions options = SetDisparityCalculationOptions();
+
+            var dsp = new DisparityLeft();
+            bitmapRes = await CalculateDisparityAsync(dsp, options);
+        }
+
+        private DisparityCalculationOptions SetDisparityCalculationOptions()
+        {
+            DisparityCalculationOptions options = new DisparityCalculationOptions();
+            options.LeftBitmap = bitmapL;
+            options.RightBitmap = bitmapR;
+            options.MaxDepth = maxDepth;
+            options.MaskSize = maskSize;
+
+            return options;
+        }
+
+        private async Task<Bitmap> CalculateDisparityAsync(Disparity disp, DisparityCalculationOptions options)
+        {
+            return await Task.Run(() =>
+            {
+                return disp.CalculateDisparity(options);
+
+            });
         }
     }
 }
