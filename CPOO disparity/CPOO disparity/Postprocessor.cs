@@ -149,7 +149,45 @@ namespace CPOO_disparity
                     for (int x = 0; x < w ; x++)
                     {
                         //real pseudocolor function is needed
-                        outImg.SetPixel(x, y, new Rgb(inImg.GetPixel(x,y).R, 0,0));                      
+                        //outImg.SetPixel(x, y, new Rgb(inImg.GetPixel(x,y).R, 0,0));
+
+                        int black = inImg.GetPixel(x, y).G;
+                      
+
+                        double factor = black / 255.0;
+                        int red = 0;
+                        int green = 0;
+                        int blue = 0;
+                        double aux = 0;
+                        if (factor < 0.5)
+                        {
+                            factor = factor * 2.0;
+                            if (factor == 0)
+                            {
+                                red = 255;
+                            }
+                            else
+                            {
+                                aux = ((factor*(-1.0))+1.0) * 255.0;
+                                red = Convert.ToInt32(aux);
+                            }
+                            aux = 255.0 * factor;
+                            green = Convert.ToInt32(aux);
+
+                        }
+                        else if(factor > 0.5)
+                        {
+                            factor = (factor - 0.5)*2.0;
+                            aux = ((factor * (-1.0)) + 1.0) * 255.0;
+                            green = Convert.ToInt32(aux);
+                            aux = 255.0 * factor;
+                            blue = Convert.ToInt32(aux);
+                        }
+                        else
+                        {
+                            green = 255;
+                        }
+                        outImg.SetPixel(x, y, new Rgb(red, green, blue));
                     }
                 });
 
