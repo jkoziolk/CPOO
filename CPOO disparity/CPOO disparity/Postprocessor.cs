@@ -11,7 +11,7 @@ namespace CPOO_disparity
     public static class Postprocessor
     {
         public static Bitmap EdgesOnImg { get; private set; }
-        public static Bitmap EdgesOnDisp { get; private set; }      
+        public static Bitmap EdgesOnDisp { get; private set; }
 
         public static Bitmap ColorGradCmp(Bitmap img, Bitmap disp, double treshold, double dispTreshold, int maxVal = 64)
         {
@@ -105,35 +105,52 @@ namespace CPOO_disparity
             return res;
         }
 
-
-        public static Bitmap MedianOnMask(Bitmap img, Bitmap mask)
+        public static Bitmap MedianOnMask(Bitmap img, Bitmap mask, int maskSize)
         {
             int w = img.Width;
             int h = img.Height;
+            int nbhR = maskSize / 2;
             Bitmap res = new Bitmap(img);
 
             using (ProcessableBitmap inImg = new ProcessableBitmap(img))
             using (ProcessableBitmap inMask = new ProcessableBitmap(mask))
             using (ProcessableBitmap outImg = new ProcessableBitmap(res))
-                Parallel.For(2, h - 2, y =>
+                Parallel.For(nbhR, h - nbhR, y =>
                 {
-                    for (int x = 2; x < w - 2; x++)
+                    for (int x = nbhR; x < w - nbhR; x++)
                     {
                         if (inMask.GetPixel(x, y).R == 255)
                         {
-                            List<int> vector = new List<int>();
-                            for (int i = -2; i <= 2; i++)
-                                for (int j = -2; j <= 2; j++)
-                                    vector.Add(inImg.GetPixel(x + i, y + j).R);
+                            int itr = 2;
+                            List<int> vector = ElementaryMedian(inImg, inMask, x, y, w, h, maskSize);
+                            while (vector.Count <= 1)
+                            {
+                                vector = ElementaryMedian(inImg, inMask, x, y, w, h, maskSize + itr);
+                                itr += 2;
+                            }
 
-                            vector.Sort();
-                            if (vector.Count > 0)
+                            if (vector.Count > 1)
                                 outImg.SetPixel(x, y, new Rgb(vector[vector.Count / 2]));
                         }
                     }
                 });
 
             return res;
+        }
+        private static List<int> ElementaryMedian(ProcessableBitmap inImg, ProcessableBitmap inMask, int x, int y, int w, int h, int maskSize)
+        {
+            int nbhR = maskSize / 2;
+            List<int> vector = new List<int>();
+            for (int i = -nbhR; i <= nbhR; i++)
+                for (int j = -nbhR; j <= nbhR; j++)
+                {
+                    if (x + i < 0 || y + j < 0 || x + i >= w || y + j >= h)
+                        return new List<int>();
+                    if (inMask.GetPixel(x + i, y + j).R == 0)
+                        vector.Add(inImg.GetPixel(x + i, y + j).R);
+                }
+            vector.Sort();
+            return vector;
         }
 
         public static void HsvToRgb(double h, double S, double V, out int r, out int g, out int b)
@@ -244,11 +261,8 @@ namespace CPOO_disparity
             using (ProcessableBitmap outImg = new ProcessableBitmap(res))
                 Parallel.For(0, h, y =>
                 {
-                    for (int x = 0; x < w ; x++)
+                    for (int x = 0; x < w; x++)
                     {
-                        //real pseudocolor function is needed
-                        //outImg.SetPixel(x, y, new Rgb(inImg.GetPixel(x,y).R, 0,0));
-
                         int black = inImg.GetPixel(x, y).G;
                         double factor = black / 255.0;
                         //scale invertion
@@ -266,48 +280,6 @@ namespace CPOO_disparity
 
                         HsvToRgb(hue, sat, val, out r, out g, out b);
                         outImg.SetPixel(x, y, new Rgb(r, g, b));
-
-
-                        /*
-                        //ver 1
-                        int black = inImg.GetPixel(x, y).G;
-                      
-
-                        double factor = black / 255.0;
-                        int red = 0;
-                        int green = 0;
-                        int blue = 0;
-                        double aux = 0;
-                        if (factor < 0.5)
-                        {
-                            factor = factor * 2.0;
-                            if (factor == 0)
-                            {
-                                red = 255;
-                            }
-                            else
-                            {
-                                aux = ((factor*(-1.0))+1.0) * 255.0;
-                                red = Convert.ToInt32(aux);
-                            }
-                            aux = 255.0 * factor;
-                            green = Convert.ToInt32(aux);
-
-                        }
-                        else if(factor > 0.5)
-                        {
-                            factor = (factor - 0.5)*2.0;
-                            aux = ((factor * (-1.0)) + 1.0) * 255.0;
-                            green = Convert.ToInt32(aux);
-                            aux = 255.0 * factor;
-                            blue = Convert.ToInt32(aux);
-                        }
-                        else
-                        {
-                            green = 255;
-                        }
-                        outImg.SetPixel(x, y, new Rgb(red, green, blue));
-                        */
                     }
                 });
 

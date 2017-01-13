@@ -157,7 +157,7 @@ namespace CPOO_disparity
                 await Task.Run(() =>
                 {
                     Bitmap mask = Postprocessor.ColorGradCmp(bitmapL, bitmapRes, imgEdg, dispEdg, maxDepth);
-                    bitmapRes = Postprocessor.MedianOnMask(bitmapRes, mask);
+                    bitmapRes = Postprocessor.MedianOnMask(bitmapRes, mask, maskSize);
                 });
             }
 
